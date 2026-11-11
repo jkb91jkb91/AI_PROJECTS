@@ -1,0 +1,17 @@
+# Serwer MCP (python main.py, port 8001).
+# SZABLON: @ZMIENNE@ podstawia bootstrap.sh przy instalacji do /etc/systemd/system/.
+[Unit]
+Description=yt-mcp (serwer MCP, port 8001)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=@USER@
+WorkingDirectory=@APP_DIR@
+EnvironmentFile=@ENV_FILE@
+ExecStart=@APP_DIR@/.venv/bin/python main.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

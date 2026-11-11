@@ -1,0 +1,17 @@
+# Tunel Cloudflare do serwera MCP. Zależy od yt-mcp.service:
+# startuje po nim i zatrzymuje się razem z nim (Requires + After).
+# SZABLON: @ZMIENNE@ podstawia bootstrap.sh przy instalacji do /etc/systemd/system/.
+[Unit]
+Description=yt-mcp tunel Cloudflare
+After=network-online.target yt-mcp.service
+Wants=network-online.target
+Requires=yt-mcp.service
+
+[Service]
+User=@USER@
+ExecStart=@CLOUDFLARED@ tunnel --config @CF_CONFIG@ run
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

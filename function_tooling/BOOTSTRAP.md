@@ -8,14 +8,16 @@ i nie tworzysz od nowa. Skrypt tylko instaluje usługi systemd.
 Tunel i domena nie są w repo. Skopiuj poświadczenia na nową maszynę:
 
 ```bash
-scp -r ~/.cloudflared  uzytkownik@nowa-maszyna:~/
+scp -r ~/.cloudflared  jkb91@pi5.local:~/
 ```
 
-(opcjonalnie, żeby nie tracić streszczeń: `scp yt_mcp.db uzytkownik@nowa-maszyna:~/function_tooling/`)
+(opcjonalnie, żeby nie tracić streszczeń: `scp yt_mcp.db jkb91@pi5.local:~/function_tooling/`)
 
-## Na nowej maszynie
+## Na nowej maszynie (Raspberry Pi)
 
 ```bash
+ssh jkb91@pi5.local
+
 sudo apt update && sudo apt install -y git curl     # na Raspberry Pi OS Lite git bywa nieobecny
 git clone <adres-repo> function_tooling && cd function_tooling
 export CLAUDE_KEY=<klucz-API-Anthropic>              # tylko do pierwszego uruchomienia

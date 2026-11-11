@@ -13,6 +13,7 @@
 # Dwie usługi (druga zależy od pierwszej):
 #   yt-mcp.service          serwer MCP (python main.py, port 8001)
 #   yt-mcp-tunnel.service   cloudflared; Requires+After=yt-mcp.service
+# Opis i szablony: systemd/ (README.md)
 #
 # Sekrety (CLAUDE_KEY) leżą w /etc/yt-mcp.env (chmod 600), nie w plikach usług.
 
@@ -96,42 +97,16 @@ else
   echo "    istnieje — zostawiam bez zmian"
 fi
 
-echo "==> /etc/systemd/system/yt-mcp.service"
-cat > /etc/systemd/system/yt-mcp.service <<EOF
-[Unit]
-Description=yt-mcp (serwer MCP, port 8001)
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-User=$RUN_USER
-WorkingDirectory=$APP_DIR
-EnvironmentFile=$ENV_FILE
-ExecStart=$APP_DIR/.venv/bin/python main.py
-Restart=always
-RestartSec=5
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-echo "==> /etc/systemd/system/yt-mcp-tunnel.service"
-cat > /etc/systemd/system/yt-mcp-tunnel.service <<EOF
-[Unit]
-Description=yt-mcp tunel Cloudflare ($PUBLIC_HOST)
-After=network-online.target yt-mcp.service
-Wants=network-online.target
-Requires=yt-mcp.service
-
-[Service]
-User=$RUN_USER
-ExecStart=$CLOUDFLARED tunnel --config $CF_CONFIG run
-Restart=always
-RestartSec=5
-
-[Install]
-WantedBy=multi-user.target
-EOF
+# Jednostki leżą w repo (systemd/*.service) jako szablony z @ZMIENNYMI@.
+for unit in yt-mcp.service yt-mcp-tunnel.service; do
+  echo "==> /etc/systemd/system/$unit"
+  sed -e "s|@USER@|$RUN_USER|g" \
+      -e "s|@APP_DIR@|$APP_DIR|g" \
+      -e "s|@ENV_FILE@|$ENV_FILE|g" \
+      -e "s|@CLOUDFLARED@|$CLOUDFLARED|g" \
+      -e "s|@CF_CONFIG@|$CF_CONFIG|g" \
+      "$APP_DIR/systemd/$unit" > "/etc/systemd/system/$unit"
+done
 
 systemctl daemon-reload
 systemctl enable --now yt-mcp.service yt-mcp-tunnel.service
