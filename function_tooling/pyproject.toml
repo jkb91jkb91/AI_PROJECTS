@@ -1,0 +1,10 @@
+[project]
+name = "yt-mcp"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic>=2.6.0",
+    "mcp[cli]>=2.3.0",
+    "yt-dlp[curl-cffi,default]>=2026.10.26",
+]
